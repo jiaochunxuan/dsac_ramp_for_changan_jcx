@@ -33,7 +33,7 @@ class Simulation():
         self.Q_net1.load_state_dict(torch.load('./'+self.args.env_name+'/method_' + str(self.args.method) + '/model/Q1_' + str(self.load_index) + '.pkl',map_location='cpu'))
 
         if self.args.double_Q:
-            elf.Q_net2 = QNet(args).to(self.device)
+            self.Q_net2 = QNet(args).to(self.device)
             # self.Q_net2 = QNet(args.state_dim, args.action_dim, args.num_hidden_cell, args.NN_type).to(self.device)
             self.Q_net2.load_state_dict(torch.load('./'+self.args.env_name+'/method_' + str(self.args.method) + '/model/Q2_' + str(self.load_index) + '.pkl',map_location='cpu'))
         
@@ -58,7 +58,7 @@ class Simulation():
             state_tensor = torch.FloatTensor(self.state.copy()).float().to(self.device)
             if self.args.NN_type == "CNN":
                 state_tensor = state_tensor.permute(2, 0, 1)
-            self.u, log_prob = self.actor.get_action(state_tensor.unsqueeze(0), False)
+            self.u, log_prob,_ = self.actor.get_action(state_tensor.unsqueeze(0), False)
 
             while True:
                 q = self.Q_net1(state_tensor.unsqueeze(0), torch.FloatTensor(self.u).to(self.device))[0]
